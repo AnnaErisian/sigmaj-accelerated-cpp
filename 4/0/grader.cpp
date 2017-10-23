@@ -3,6 +3,9 @@
 #include <stdexcept>
 #include <algorithm>
 #include <vector>
+#include <iomanip>
+#include "student_info.h"
+#include "grade.h"
 
 using std::cin;
 using std::cout;
@@ -12,42 +15,32 @@ using std::string;
 
 using std::vector;
 
-double grade(double mid, double fin, double hw) {
-  return 0.2* mid + 0.4 * fin + 0.4 * hw;
-}
+using std::setprecision;
 
-double grade(double mid, double fin, const vector<double>& hw) {
-  if(hw.size() == 0)
-    throw std::domain_error("Student has done no homework");
-  return grade(mid, fin, median(hw));
-}
 
-iostream& read_hw(istream& in, vector<double> hw) {
-  if(in) { //if we can continue
-    //ensure empty vector
-    hw.clear();
-    
-    //read in
-    double x;
-    while(in >> x) {
-      hw.push_back(x);
+int main() {
+  
+  vector<Student_info> students;
+  Student_info tempRecord;
+  string::size_type maxNameLength = 0;
+  
+  while(read(cin, tempRecord)) {
+    maxNameLength = std::max(maxNameLength, tempRecord.name.size());
+    students.push_back(tempRecord);
+  }
+  
+  sort(students.begin(), students.end(), compare);
+  
+  for(auto i = 0; i < students.size(); ++i) {
+    cout << students[i].name << string(maxNameLength - students[i].name.size() + 1, ' ');
+    try {
+      double final_grade = grade(students[i]);
+      auto prec = cout.precision();
+      cout << setprecision(3) << final_grade << setprecision(prec);
+    } catch (std::domain_error e) {
+      cout << e.what();
     }
-    
-    //clear stream status so the input can be used if it is not empty
-    in.clear();
+    cout << endl;
   }
-  
-  return in;
-}
-
-double median(vector<double> vec) {
-  auto sz = vec.size()'
-  if(sz == 0) {
-    throw std::domain_error("Attempted to find median of an empty vector.")
-  }
-  std::sort(vec.begin(), vec.end());
-  
-  auto mid = sz/2;
-  
-  return size % 2 == 0 ? (vec[mid] + vec[mid-1]) / 2 : vec[mid];
+  return 0;
 }
