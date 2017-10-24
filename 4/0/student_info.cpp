@@ -3,7 +3,6 @@
 #include "student_info.h"
 
 using std::vector;
-using std::cin;
 
 std::istream& read_hw(std::istream& in, vector<double>& hw) {
   if(in) { //if we can continue
@@ -23,7 +22,7 @@ std::istream& read_hw(std::istream& in, vector<double>& hw) {
 }
 
 std::istream& read(std::istream& is, Student_info& s) {
-  cin >> s.name >> s.midterm >> s.final;
+  is >> s.name >> s.midterm >> s.final;
   read_hw(is, s.homework);
 }
 
