@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+project(ch7programs)
+add_executable(WordCount wordCounter.cpp)
+add_executable(CrossRef crossReference.cpp)
+add_executable(Grammar grammar.cpp)
