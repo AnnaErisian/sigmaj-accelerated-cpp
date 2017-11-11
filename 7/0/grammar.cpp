@@ -3,6 +3,9 @@
 #include <map>
 #include <vector>
 #include <stdexcept>
+#include <cstdlib>
+#include <cmath>
+#include <climits>
 
 #include "split.h"
 
@@ -13,6 +16,7 @@ using std::istream;
 using std::string;
 using std::map;
 using std::vector;
+using std::rand;
 
 typedef vector<string> Rule;
 typedef vector<Rule> Rule_collection;
@@ -38,8 +42,31 @@ bool bracketed(const string& str) {
   return str[0] == '<' && str[str.length()-1] == '>';
 }
 
-int nrand(int bound) {
-  return 0;
+static unsigned int nrand_aux(){
+  const unsigned int num_bits_needed = ((int)std::log2(UINT_MAX))+1;
+  const unsigned int num_bits_rand = 6;//((int)std::log2(RAND_MAX))+1;
+  unsigned int i = 0;
+  unsigned int r = 0;
+  while(i < num_bits_needed) {
+    unsigned int rng = rand() & 63;
+    r |= rng << i;
+    i += num_bits_rand;
+  }
+  return r;
+}
+
+unsigned int nrand(unsigned int bound) {
+  if(bound <= 0)
+    throw std::domain_error("Argument bound out of range for function nrand");
+  
+  unsigned int bucket_size = UINT_MAX / bound;
+  unsigned int maxRand = bucket_size * bound;
+  unsigned int rn;
+  do
+    rn = nrand_aux() / bucket_size;
+  while(rn >= bound);
+  
+  return rn;
 }
 
 static void gen_aux(const Grammar& g, const string& word, vector<string>& output) {
@@ -67,11 +94,29 @@ vector<string> gen_sentence(const Grammar& g) {
   return ret;
 }
 
+void test_rand() {
+  cout << RAND_MAX << endl;
+  cout << INT_MAX << endl;
+  unsigned int x;
+  cin >> x;
+  for(int i = 0; i != 10000; i++) {
+    unsigned int y = nrand(x);
+    cout << y << ", ";
+    if(y >= x)
+      cout << "PROBLEM" << x;
+  }
+}
+
+void test_rand_normal() {
+  cout << RAND_MAX << endl;
+  cout << INT_MAX << endl;
+  for(int i = 0; i != 10000; i++) {
+    cout << rand() << ", ";
+  }
+}
+
 int main() {
   Grammar g = read_grammar(cin);
-  
-  for(Grammar::const_iterator i = g.begin(); i != g.end(); i++)
-    cout << i->first << ", " << i->second[0][0] << endl;
   
   vector<string> s = gen_sentence(g);
   for(string t : s)
