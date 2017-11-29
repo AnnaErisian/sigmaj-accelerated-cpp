@@ -6,12 +6,12 @@
 template <class In>
 bool equal(In b, In e, In b2) {
   while(b != e) {
-    if(*b != *b2) return false;
+    if(b2 == e || *b != *b2) return false;
     ++b;
     ++b2;
   }
-  //if both are one-off-the-end, we are equal
-  return *b == *b2;
+  //it doesn't matter if there are elements after b2+(e-b)
+  return true;
 }
 
 template <class In, class X>
@@ -35,22 +35,22 @@ In copy(In b, In e, Out d) {
 template <class For, class Out, class Pred>
 For remove_copy_if(For b, For e, Out d, Pred p) {
   For b2 = b;
-  while(b2 != e) {
-    if(p(*b2)) {
+  while(b2 != e && b != e) {
+    if(!p(*b2)) {
       //output match
       d = *b2;
       d++;
       
       //move match to front
-      swap(b, b2);
+      *b = *b2;
       b++;
       b2++;
     } else {
       b2++;
     }
     //Invariants
-    //all elements before b are matches: [0, b)
-    //all elements between b and b2 are not: [b, b2)
+    //all elements before b are not matches: [0, b)
+    //all elements between b and b2 are matches: [b, b2)
   }
   return b;
 }
@@ -59,22 +59,22 @@ For remove_copy_if(For b, For e, Out d, Pred p) {
 template <class For, class Out, class T>
 For remove_copy(For b, For e, Out d, T t) {
   For b2 = b;
-  while(b2 != e) {
-    if(*b2 == t) {
+  while(b2 != e && b != e) {
+    if(!(*b2 == t)) {
       //output match
       d = *b2;
       d++;
       
       //move match to front
-      swap(b, b2);
+      *b = *b2;
       b++;
       b2++;
     } else {
       b2++;
     }
     //Invariants
-    //all elements before b are matches: [0, b)
-    //all elements between b and b2 are not: [b, b2)
+    //all elements before b are not matches: [0, b)
+    //all elements between b and b2 are matches: [b, b2)
   }
   return b;
 }
@@ -122,21 +122,22 @@ In find_if(In b, In e, Pred p) {
   return b;
 }
 
+//Coalesces at the beginning of the sequence
 template <class For, class T>
 For remove(For b, For e, T t) {
   For b2 = b;
-  while(b2 != e) {
-    if(*b2 == t) {
+  while(b2 != e && b != e) {
+    if(!(*b2 == t)) {
       //move match to front
-      swap(b, b2);
+      *b = *b2;
       b++;
       b2++;
     } else {
       b2++;
     }
     //Invariants
-    //all elements before b are matches: [0, b)
-    //all elements between b and b2 are not: [b, b2)
+    //all elements before b are not matches: [0, b)
+    //all elements between b and b2 are matches: [b, b2)
   }
   return b;
 }
