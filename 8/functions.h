@@ -38,20 +38,19 @@ For remove_copy_if(For b, For e, Out d, Pred p) {
   For b2 = b;
   while(b2 != e && b != e) {
     if(!p(*b2)) {
-      //output match
-      d = *b2;
-      d++;
-      
       //move match to front
       *b = *b2;
       b++;
       b2++;
     } else {
+      //output match
+      d = *b2;
+      d++;
+      
       b2++;
     }
     //Invariants
     //all elements before b are not matches: [0, b)
-    //all elements between b and b2 are matches: [b, b2)
   }
   return b;
 }
@@ -62,20 +61,19 @@ For remove_copy(For b, For e, Out d, T t) {
   For b2 = b;
   while(b2 != e && b != e) {
     if(!(*b2 == t)) {
-      //output match
-      d = *b2;
-      d++;
-      
       //move match to front
       *b = *b2;
       b++;
       b2++;
     } else {
+      //output match
+      d = *b2;
+      d++;
+      
       b2++;
     }
     //Invariants
     //all elements before b are not matches: [0, b)
-    //all elements between b and b2 are matches: [b, b2)
   }
   return b;
 }
@@ -92,8 +90,10 @@ Out transform(In b, In e, Out d, F f) {
 
 template <class In, class T>
 T accumulate(In b, In e, T t) {
-  T x;
-  while(b != e) x += *b;
+  T x = t;
+  while(b != e) {
+    x += *b++;
+  }
   return x;
 }
 
@@ -138,14 +138,28 @@ For remove(For b, For e, T t) {
     }
     //Invariants
     //all elements before b are not matches: [0, b)
-    //all elements between b and b2 are matches: [b, b2)
   }
   return b;
 }
 
 template <class For, class Pred>
 For partition(For b, For e, Pred p) {
-  return remove_if(b,e,p);
+
+  For b2 = b;
+  while(b2 != e && b != e) {
+    if(!p(*b2)) {
+      //move match to front
+      std::swap(*b, *b2);
+      b++;
+      b2++;
+    } else {
+      b2++;
+    }
+    //Invariants
+    //all elements before b are not matches: [0, b)
+    //all elements between b and b2 are matches: [b, b2)
+  }
+  return b;
 }
 
 #endif
