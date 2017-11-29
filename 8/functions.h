@@ -18,6 +18,7 @@ template <class In, class X>
 In find(In b, In e, X t) {
   while(b != e) {
     if(*b == t) break;
+    b++;
   }
   return b;
 }

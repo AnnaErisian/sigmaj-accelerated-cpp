@@ -4,6 +4,38 @@
 
 using std::vector;
 
+static bool test_equal() {
+  int a[] = {1, 2, 3, 4, 5, 6, 7};
+  int b[] = {1, 2, 4, 1, 2, 3, 4};
+  int c[] = {1, 2, 3};
+  int d[] = {4, 5};
+  
+  vector<int> alpha(a, a+7);
+  vector<int> beta(b, b+7);
+  vector<int> gamma(c, c+3);
+  vector<int> delta(c, c+3);
+  vector<int> epsilon(d, d+2);
+  
+  //true
+  bool r1 = equal(alpha.begin(), alpha.end(), alpha.begin());
+  bool r2 = equal(gamma.begin(), gamma.end(), delta.begin());
+  bool r3 = equal(gamma.begin(), gamma.end(), alpha.begin());
+  
+  //false
+  bool r4 = equal(alpha.begin(), alpha.end(), beta.begin());
+  bool r5 = equal(alpha.begin(), alpha.end(), gamma.begin());
+  bool r6 = equal(alpha.begin(), alpha.end(), epsilon.begin());
+
+//  if(r1) std::cout << "1" << std::endl;
+//  if(r2) std::cout << "2" << std::endl;
+//  if(!r3) std::cout << "3" << std::endl;
+//  if(!r4) std::cout << "4" << std::endl;
+//  if(!r5) std::cout << "5" << std::endl;
+//  if(!r6) std::cout << "6" << std::endl;
+    
+  return  r1 && r2 && r3 && !r4 && !r5 && !r6;
+}
+
 static bool test_search() {
   int a[] = {1, 2, 3, 4, 5, 6, 7};
   int b[] = {1, 2, 4, 1, 2, 3, 4};
@@ -36,6 +68,54 @@ static bool test_search() {
           r3 == alpha.begin() + 3 &&
           r4 == alpha.end() - 1 &&
           r5 == beta.begin() + 3;
+}
+
+static bool test_find() {
+  int a[] = {1, 2, 3, 4, 5, 6, 7};
+  int b[] = {1, 2, 4, 1, 2, 3, 4};
+  int c[] = {1, 2, 3};
+  int d[] = {4, 5};
+  int e[] = {7};
+  
+  vector<int> alpha(a, a+7);
+  vector<int> beta(b, b+7);
+  vector<int> gamma(c, c+3);
+  vector<int> delta(d, d+2);
+  vector<int> epsilon(e, e+1);
+  
+  typedef vector<int>::const_iterator iter;
+
+  bool succ = true;
+  
+  //find
+  iter r1 = find(alpha.begin(), alpha.end(), 1);
+  succ &= r1 == alpha.begin();
+  iter r2 = find(alpha.begin(), alpha.end(), 5);
+  succ &= r2 == alpha.begin()+4;
+  iter r3 = find(alpha.begin(), alpha.end(), 7);
+  succ &= r3 == alpha.begin()+6;
+  iter r4 = find(epsilon.begin(), epsilon.end(), 7);
+  succ &= r4 == epsilon.begin();
+  iter r5 = find(beta.begin()+3, beta.end(), 2);
+  succ &= r5 == beta.begin()+4;
+  iter r6 = find(beta.begin()+3, beta.end(), 4);
+  succ &= r6 == beta.begin()+6;
+  
+  //find first
+  iter r7 = find(beta.begin(), beta.end(), 1);
+  succ &= r7 == beta.begin()+0;
+  iter r8 = find(beta.begin(), beta.end(), 2);
+  succ &= r8 == beta.begin()+1;
+  iter r9 = find(beta.begin(), beta.end(), 4);
+  succ &= r9 == beta.begin()+2;
+
+  //fail to find
+  iter r0 = find(beta.begin(), beta.end(), 7);
+  succ &= r0 == beta.end();
+  iter rA = find(epsilon.begin(), epsilon.end(), 8);
+  succ &= rA == epsilon.end();
+  
+  return  succ;
 }
 
 static bool test_remove() {
@@ -143,38 +223,6 @@ static bool test_remove() {
   return  succ;
 }
 
-static bool test_equal() {
-  int a[] = {1, 2, 3, 4, 5, 6, 7};
-  int b[] = {1, 2, 4, 1, 2, 3, 4};
-  int c[] = {1, 2, 3};
-  int d[] = {4, 5};
-  
-  vector<int> alpha(a, a+7);
-  vector<int> beta(b, b+7);
-  vector<int> gamma(c, c+3);
-  vector<int> delta(c, c+3);
-  vector<int> epsilon(d, d+2);
-  
-  //true
-  bool r1 = equal(alpha.begin(), alpha.end(), alpha.begin());
-  bool r2 = equal(gamma.begin(), gamma.end(), delta.begin());
-  bool r3 = equal(gamma.begin(), gamma.end(), alpha.begin());
-  
-  //false
-  bool r4 = equal(alpha.begin(), alpha.end(), beta.begin());
-  bool r5 = equal(alpha.begin(), alpha.end(), gamma.begin());
-  bool r6 = equal(alpha.begin(), alpha.end(), epsilon.begin());
-
-//  if(r1) std::cout << "1" << std::endl;
-//  if(r2) std::cout << "2" << std::endl;
-//  if(!r3) std::cout << "3" << std::endl;
-//  if(!r4) std::cout << "4" << std::endl;
-//  if(!r5) std::cout << "5" << std::endl;
-//  if(!r6) std::cout << "6" << std::endl;
-    
-  return  r1 && r2 && r3 && !r4 && !r5 && !r6;
-}
-
 static void run_print_results(std::string name, bool b()) {
   if(b()) {
     std::cout << "[O]" << name << " passed!" << std::endl;
@@ -186,7 +234,7 @@ static void run_print_results(std::string name, bool b()) {
 int main() {
   run_print_results("test_equal", test_equal);
   run_print_results("test_search", test_search);
-//  run_print_results("test_find", test_find);
+  run_print_results("test_find", test_find);
 //  run_print_results("test_find_if", test_find_if);
 //  run_print_results("test_transform", test_transform);
 //  run_print_results("test_accumulate", test_accumulate);
